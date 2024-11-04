@@ -1,0 +1,35 @@
+name: Build and Push to DockerHub
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'  # Change to your application's Java version if different
+
+    - name: Build JAR
+      run: ./gradlew build  # Or use `mvn package` if using Maven
+
+    - name: Log in to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and tag Docker image
+      run: docker build -t mishkafloof/SUTTON-WOPro-Service:latest .
+
+    - name: Push Docker image
+      run: docker push mishkafloof/SUTTON-WOPro-Service:latest
+
